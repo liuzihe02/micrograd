@@ -13,11 +13,14 @@ class Module:
 class Neuron(Module):
 
     def __init__(self, nin, nonlin=True):
+        #nin is the number of inputs nodes to this neuron
         self.w = [Value(random.uniform(-1,1)) for _ in range(nin)]
         self.b = Value(0)
         self.nonlin = nonlin
 
     def __call__(self, x):
+        #x is the list of all the outputs from previous layer
+        #act is activation
         act = sum((wi*xi for wi,xi in zip(self.w, x)), self.b)
         return act.relu() if self.nonlin else act
 
@@ -30,9 +33,11 @@ class Neuron(Module):
 class Layer(Module):
 
     def __init__(self, nin, nout, **kwargs):
+        #nout is the number of output nodes, basically the number of nodes in this layer
         self.neurons = [Neuron(nin, **kwargs) for _ in range(nout)]
 
     def __call__(self, x):
+        #n(x) is calling itself on x
         out = [n(x) for n in self.neurons]
         return out[0] if len(out) == 1 else out
 

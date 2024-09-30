@@ -3,6 +3,7 @@ class Value:
     """ stores a single scalar value and its gradient """
 
     def __init__(self, data, _children=(), _op=''):
+        #data can be any type here
         self.data = data
         self.grad = 0
         # internal variables used for autograd graph construction
@@ -14,7 +15,10 @@ class Value:
         other = other if isinstance(other, Value) else Value(other)
         out = Value(self.data + other.data, (self, other), '+')
 
+
         def _backward():
+            #out._backward contains the instructions for how to update 
+            #the gradients of the inputs (self and other) based on the gradient of the output (out)
             self.grad += out.grad
             other.grad += out.grad
         out._backward = _backward
@@ -26,6 +30,10 @@ class Value:
         out = Value(self.data * other.data, (self, other), '*')
 
         def _backward():
+            #if f=x*y
+            #self.grad is d(Loss)/dx
+            #out.grad is d(Loss)/df
+            #other.data is df/dx
             self.grad += other.data * out.grad
             other.grad += self.data * out.grad
         out._backward = _backward
